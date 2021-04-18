@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_netflix_responsive_ui/cubits/app_bar/app_bar_cubit.dart';
 import 'package:flutter_netflix_responsive_ui/data/data.dart';
 import 'package:flutter_netflix_responsive_ui/screen/screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_netflix_responsive_ui/widgets/content_header.dart';
 import 'package:flutter_netflix_responsive_ui/widgets/content_list.dart';
 import 'package:flutter_netflix_responsive_ui/widgets/custom_app_bar.dart';
@@ -15,15 +17,12 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   ScrollController _scrollController;
 
-  double _scrollOffSet = 0.0;
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController()
       ..addListener(() {
-        setState(() {
-          _scrollOffSet = _scrollController.offset;
-        });
+        context.read<AppBarCubit>().setOffSet(_scrollController.offset);
       });
   }
 
@@ -40,8 +39,12 @@ class _HomeScreenState extends State<HomeScreen> {
       extendBodyBehindAppBar: true, //to extend the body of featured content
       appBar: PreferredSize(
         preferredSize: Size(screenSize.width, 60),
-        child: CustomAppBar(
-          scrollOffSet: _scrollOffSet,
+        child: BlocBuilder<AppBarCubit, double>(
+          builder: (context, scrollOffSet) {
+            return CustomAppBar(
+              scrollOffSet: scrollOffSet,
+            );
+          },
         ),
       ),
       floatingActionButton: FloatingActionButton(
